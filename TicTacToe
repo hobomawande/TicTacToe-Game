@@ -1,0 +1,685 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.Windows.Threading;
+
+namespace MyProject
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        private int xs = 0;
+        private BitmapImage[] thePis;
+        private int CurrentState = 0;
+        private BitmapImage[] thePics;
+        private BitmapImage[] thePic;
+        private DispatcherTimer theTime;
+        private DispatcherTimer theTim;
+        private DispatcherTimer theTi;
+        public bool isTurn = true;
+        private string InthisProject = "pack://application:,,,/";             // path to the images in this project
+        private string InthisProjec = "pack://application:,,,/";
+        public MainWindow()
+        {
+            InitializeComponent();
+            // initializing Canvases
+            PlayCan.Visibility = Visibility.Hidden;
+            PlaersCan.Visibility = Visibility.Hidden;
+            homeCan.Visibility = Visibility.Visible;
+            ShowCan.Visibility = Visibility.Hidden;
+
+
+
+
+            // Initializing image object and adding images to control players by trafic lights
+            thePics = new BitmapImage[]
+            {
+                new BitmapImage(new Uri(InthisProject+"Green.PNG")),
+                 new BitmapImage(new Uri(InthisProject+"Red.PNG"))
+            };
+
+            // images to simulate the help button
+            thePis = new BitmapImage[]
+           {
+                new BitmapImage(new Uri(InthisProject+"win.PNG")),
+                 new BitmapImage(new Uri(InthisProject+"draw.PNG"))
+           };
+
+            /// Images that are playing at the home page
+            thePic = new BitmapImage[]
+            {
+                new BitmapImage(new Uri(InthisProjec+"image1.jpg")),
+                new BitmapImage(new Uri(InthisProjec+"image2.jpg")),
+                new BitmapImage(new Uri(InthisProjec+"image3.jpg")),
+                new BitmapImage(new Uri(InthisProjec+"image4.jpg")),
+                new BitmapImage(new Uri(InthisProjec+"image5.jpg")),
+                new BitmapImage(new Uri(InthisProjec+"image6.jpg"))
+            };
+            // Initializing timer for the trafic lights
+            theTime = new DispatcherTimer();
+            theTime.Interval = TimeSpan.FromMilliseconds(60);
+            theTime.IsEnabled = true;
+            theTime.Tick += TheTime_Tick;
+
+            // Initializing timer to display images at the homw page
+            theTim = new DispatcherTimer();
+            theTim.Interval = TimeSpan.FromMilliseconds(600);
+            theTim.IsEnabled = true;
+            theTim.Tick += TheTim_Tick;
+
+
+            // Initializing timer to simulate the help button
+            theTi = new DispatcherTimer();
+            theTi.Interval = TimeSpan.FromMilliseconds(1400);
+            theTi.IsEnabled = true;
+            theTi.Tick += TheTi_Tick;
+
+        }
+        /// <summary>
+        /// timer for help button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TheTi_Tick(object sender, EventArgs e)
+        {
+            Help();
+        }
+        /// <summary>
+        /// help method that displays the snap short of already played game
+        /// </summary>
+        public void Help()
+        {
+            showIMAge.Source = thePis[xs];
+            xs++;
+            if (xs > 1) {
+                xs %= 1;
+            }
+        }
+        /// <summary>
+        /// timer thea models the transition of pictures at the home pahe
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TheTim_Tick(object sender, EventArgs e)
+        {
+            PICS();
+           
+        }
+        /// <summary>
+        /// method to simulate the display of home page pictures with a varriable that manages changing from one to another
+        /// </summary>
+        public void PICS()
+        {
+            myImage.Source = thePic[CurrentState];
+            CurrentState = CurrentState + 1;
+            if (CurrentState ==6)
+            {
+                CurrentState %= 6;
+            }
+
+        }
+        private void TheTime_Tick(object sender, EventArgs e)
+        {
+            Model();
+           
+           
+        }
+        /// <summary>
+        /// method to check all Horizontal buttons 
+        /// </summary>
+        /// <returns>True is three consecative buttons have same content otherwise False</returns>
+        #region Horizontal Check Method()
+        public bool Horintal()
+        {
+            // Horizontal Check on Row 1
+            if(( b1r1.Content!="" && b2r1.Content!=""&& b3r1.Content != "") )
+            {
+                if( ((b1r1.Content==b2r1.Content) && (b2r1.Content==b3r1.Content )) && (isTurn == false))
+                {
+                    b1r2.IsEnabled = false;
+                    b2r2.IsEnabled = false;
+                    b3r2.IsEnabled = false;
+                    b1r3.IsEnabled = false;
+                    b2r3.IsEnabled = false;
+                    b3r3.IsEnabled = false;
+                    return true;
+                   
+                }
+                else if (((b1r1.Content == b2r1.Content) && (b2r1.Content == b3r1.Content)) && (isTurn == true))
+                {
+                    b1r2.IsEnabled = false;
+                    b2r2.IsEnabled = false;
+                    b3r2.IsEnabled = false;
+                    b1r3.IsEnabled = false;
+                    b2r3.IsEnabled = false;
+                    b3r3.IsEnabled = false;
+                    return true;
+                    
+                }
+            }
+            //  Horizontal Check on Row 2 
+            if ((b1r2.Content != "" && b2r2.Content != "" && b3r2.Content != ""))
+            {
+                if (((b1r2.Content == b2r2.Content) && (b2r2.Content == b3r2.Content)) && (isTurn == false))
+                {
+                    b1r1.IsEnabled = false;
+                    b2r1.IsEnabled = false;
+                    b3r1.IsEnabled = false;
+                    b1r3.IsEnabled = false;
+                    b2r3.IsEnabled = false;
+                    b3r3.IsEnabled = false;
+                    return true;
+                    
+                }
+                else if (((b1r2.Content == b2r2.Content) && (b2r2.Content == b3r2.Content)) && (isTurn == true))
+                {
+                    b1r1.IsEnabled = false;
+                    b2r1.IsEnabled = false;
+                    b3r1.IsEnabled = false;
+                    b1r3.IsEnabled = false;
+                    b2r3.IsEnabled = false;
+                    b3r3.IsEnabled = false;
+                    return true;
+                   
+                }
+            }
+            //  Horizontal Check on Row 3
+            if ((b1r3.Content != "" && b2r3.Content != "" && b3r3.Content != ""))
+            {
+                if (((b1r3.Content == b2r3.Content) && (b2r3.Content == b3r3.Content)) && (isTurn == false))
+                {
+                    b1r1.IsEnabled = false;
+                    b2r1.IsEnabled = false;
+                    b3r1.IsEnabled = false;
+                    b1r2.IsEnabled = false;
+                    b2r2.IsEnabled = false;
+                    b3r2.IsEnabled = false;
+                    return true;
+                    
+                }
+                else if (((b1r3.Content == b2r3.Content) && (b2r3.Content == b3r3.Content)) && (isTurn == true))
+                {
+                    b1r1.IsEnabled = false;
+                    b2r1.IsEnabled = false;
+                    b3r1.IsEnabled = false;
+                    b1r2.IsEnabled = false;
+                    b2r2.IsEnabled = false;
+                    b3r2.IsEnabled = false;
+                    return true;
+                    
+                }
+            }
+            return false;
+        }
+        #endregion
+
+        /// <summary>
+        ///  method to check all Vertical buttons 
+        /// </summary>
+        /// <returns>True is three consecative buttons have same content otherwise False</returns>
+        #region   Vertical Check Method()
+        public bool Vertical()
+        {
+            // Vertical Check on Row 1
+            if ((b1r1.Content != "" && b1r2.Content != "" && b1r3.Content != ""))
+            {
+                if (((b1r1.Content == b1r2.Content) && (b1r2.Content == b1r3.Content)) && (isTurn == false))
+                {
+                    b2r1.IsEnabled = false;
+                    b3r1.IsEnabled = false;
+                    b2r2.IsEnabled = false;
+                    b3r2.IsEnabled = false;
+                    b2r3.IsEnabled = false;
+                    b3r3.IsEnabled = false;
+                    return true;
+                    
+                }
+                else if (((b1r1.Content == b1r2.Content) && (b1r2.Content == b1r3.Content)) && (isTurn == true))
+                {
+                    b2r1.IsEnabled = false;
+                    b3r1.IsEnabled = false;
+                    b2r2.IsEnabled = false;
+                    b3r2.IsEnabled = false;
+                    b2r3.IsEnabled = false;
+                    b3r3.IsEnabled = false;
+                    return true;
+                   
+                }
+            }
+            //  Vertical Check on Row 2 
+            if ((b2r1.Content != "" && b2r2.Content != "" && b2r3.Content != ""))
+            {
+                if (((b2r1.Content == b2r2.Content) && (b2r2.Content == b2r3.Content)) && (isTurn == false))
+                {
+                    b1r1.IsEnabled = false;
+                    b3r1.IsEnabled = false;
+                    b1r2.IsEnabled = false;
+                    b3r2.IsEnabled = false;
+                    b1r3.IsEnabled = false;
+                    b3r3.IsEnabled = false;
+                    return true;
+                    
+                }
+                else if (((b2r1.Content == b2r2.Content) && (b2r2.Content == b2r3.Content)) && (isTurn == true))
+                {
+                    b1r1.IsEnabled = false;
+                    b3r1.IsEnabled = false;
+                    b1r2.IsEnabled = false;
+                    b3r2.IsEnabled = false;
+                    b1r3.IsEnabled = false;
+                    b3r3.IsEnabled = false;
+                    return true;
+                    
+                }
+            }
+            //  Vertical Check on Row 3
+            if ((b3r1.Content != "" && b3r2.Content != "" && b3r3.Content != ""))
+            {
+                if (((b3r1.Content == b3r2.Content) && (b3r2.Content == b3r3.Content)) && (isTurn == false))
+                {
+                    b1r1.IsEnabled = false;
+                    b2r1.IsEnabled = false;
+                    b1r2.IsEnabled = false;
+                    b2r2.IsEnabled = false;
+                    b1r3.IsEnabled = false;
+                    b2r3.IsEnabled = false;
+                    return true;
+                    
+                }
+                else if (((b3r1.Content == b3r2.Content) && (b3r2.Content == b3r3.Content)) && (isTurn == true))
+                {
+                    b1r1.IsEnabled = false;
+                    b2r1.IsEnabled = false;
+                    b1r2.IsEnabled = false;
+                    b2r2.IsEnabled = false;
+                    b1r3.IsEnabled = false;
+                    b2r3.IsEnabled = false;
+                    return true;
+                    
+                }
+            }
+            return false;
+        }
+        #endregion
+
+        /// <summary>
+        /// method to check both diagonals
+        /// </summary>
+        /// <returns>True is three consecative buttons have same content otherwise False</returns>
+        #region   Diagonal Chech Method()
+        public bool Diagonal()
+        {
+            // left diagonal cheking
+            if ((b1r1.Content != "" && b2r2.Content != "" && b3r3.Content != "") || (b3r1.Content != "" && b2r2.Content != "" && b1r3.Content != ""))
+            {
+                if (((b1r1.Content == b2r2.Content) && (b2r2.Content == b3r3.Content)) && (isTurn == false))
+                {     // X wins when turn =false
+                    b2r1.IsEnabled = false;
+                    b3r1.IsEnabled = false;
+                    b1r2.IsEnabled = false;
+                    b3r2.IsEnabled = false;
+                    b1r3.IsEnabled = false;
+                    b2r3.IsEnabled = false;
+                    return true;
+                   
+                }
+                else if (((b1r1.Content == b2r2.Content) && (b2r2.Content == b3r3.Content)) && (isTurn == true))
+                {
+                    b2r1.IsEnabled = false;
+                    b3r1.IsEnabled = false;
+                    b1r2.IsEnabled = false;
+                    b3r2.IsEnabled = false;
+                    b1r3.IsEnabled = false;
+                    b2r3.IsEnabled = false;
+                    return true;
+                   
+                }
+              else  if (((b3r1.Content == b2r2.Content) && (b2r2.Content == b1r3.Content)) && (isTurn == false))
+                {
+                    b1r1.IsEnabled = false;
+                    b2r1.IsEnabled = false;
+                    b1r2.IsEnabled = false;
+                    b3r2.IsEnabled = false;
+                    b2r3.IsEnabled = false;
+                    b3r3.IsEnabled = false;
+                    return true;
+                   
+                }
+                else if (((b3r1.Content == b2r2.Content) && (b2r2.Content == b1r3.Content)) && (isTurn == true))
+                {
+                    b1r1.IsEnabled = false;
+                    b2r1.IsEnabled = false;
+                    b1r2.IsEnabled = false;
+                    b3r2.IsEnabled = false;
+                    b2r3.IsEnabled = false;
+                    b3r3.IsEnabled = false;
+                    return true;
+                  
+                }
+              
+            }
+            // right diagonal checking
+
+            return false;
+        }
+        #endregion
+
+        /// <summary>
+        /// method to check for a Draw
+        /// </summary>
+        /// <return>Prints only "Its a draw"</return>return>
+        #region  Draw Method()
+        public void Draw()
+        {
+            if(b1r1.IsEnabled==false && b2r1.IsEnabled==false && b3r1.IsEnabled==false &&
+                b1r2.IsEnabled==false && b2r2.IsEnabled==false && b3r2.IsEnabled==false &&
+                b1r3.IsEnabled==false &&b2r3.IsEnabled==false && b3r3.IsEnabled == false) { 
+            if (!Horintal())
+            {
+                    if (!Vertical())
+                    {
+                        if (!Diagonal())
+                        {
+
+                            MessageBox.Show($"It's a Draw\nNeither {fPlayer.Content} nor {secPlayer.Content} wins !", "Tic Tac Toe Gaming World", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+
+
+                        }
+                    }
+                }
+            }
+            }
+        #endregion
+
+        public void Model()
+        {
+            if (isTurn)
+            {
+
+                Player1Image.Source = thePics[0];
+                player2Image.Source = thePics[1];
+
+
+            }
+            else
+            {
+                Player1Image.Source = thePics[1];
+                player2Image.Source = thePics[0];
+            }
+
+        }
+
+
+        /// <summary>
+        /// Button that models the players 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+ 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            // Casting a button to object b
+
+           
+            Button b = (Button)sender;
+            if (isTurn)
+            {
+               
+                b.Content = "X";                         // changing the content of the button to X
+                b.IsEnabled = false;                     // preventing cheating
+                isTurn = false;                          // passing the turn to the next player
+                if (Vertical())
+                {
+                    if (isTurn==false)
+                    {
+                     MessageBox.Show($" {fPlayer.Content} wins !\nWas playing with {"X"}", "Tic Tac Toe Gaming World", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    }
+                    else
+                    {
+                        MessageBox.Show($" {secPlayer.Content} wins\n Was playing with {"O"} !", "Tic Tac Toe Gaming World", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    }
+                }                      // If Statement to chech only when the vertical method returns TRUE (based on who's turns was ) and pronounce the winner
+                if (Horintal())
+                {
+                    if (isTurn == false)
+                    {
+                        MessageBox.Show($" {fPlayer.Content} wins !\nWas playing with {"X"}", "Tic Tac Toe Gaming World", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    }
+                    else
+                    {
+                        MessageBox.Show($" {secPlayer.Content} wins\n Was playing with {"O"} !", "Tic Tac Toe Gaming World", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    }
+                }                      // If Statement to chech only when the Horizontal method returns TRUE (based on who's turns was ) and pronounce the winner
+                if (Diagonal())
+                {
+                    if (isTurn == false)
+                    {
+                        MessageBox.Show($" {fPlayer.Content} wins !\nWas playing with {"X"}", "Tic Tac Toe Gaming World", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    }
+                    else
+                    {
+                        MessageBox.Show($" {secPlayer.Content} wins\n Was playing with {"O"} !", "Tic Tac Toe Gaming World", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    }
+                }                      // If Statement to chech only when the Diagonal method returns TRUE (based on who's turns was ) and pronounce the winner
+
+                Draw();                                 // invoking the Draw() method when there is no winnner
+
+
+            }                                           // If tha models Player X's turn
+            else
+            {
+
+                b.Content = "O";                       // changing the content of the button to X
+                b.IsEnabled = false;                   // preventing cheating
+                isTurn = true;                         // passing the turn to the next player
+                if (Vertical())
+                {
+                    if (isTurn == false)
+                        if (isTurn == false)
+                        {
+                            MessageBox.Show($" {fPlayer.Content} wins !\nWas playing with {"X"}", "Tic Tac Toe Gaming World", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                        }
+                        else
+                        {
+                            MessageBox.Show($" {secPlayer.Content} wins\n Was playing with {"O"} !", "Tic Tac Toe Gaming World", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                        }
+                }                    // If Statement to chech only when the vertical method returns TRUE (based on who's turns was ) and pronounce the winner
+                if (Horintal())
+                {
+                    if (isTurn == false)
+                    {
+                        MessageBox.Show($" {fPlayer.Content} wins !\nWas playing with {"X"}", "Tic Tac Toe Gaming World", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    }
+                    else
+                    {
+                        MessageBox.Show($" {secPlayer.Content} wins\n Was playing with {"O"} !", "Tic Tac Toe Gaming World", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    }
+                }                    // If Statement to chech only when the Horizontal method returns TRUE (based on who's turns was ) and pronounce the winner
+                if (Diagonal())                       // If Statement to chech only when the Diagonal method returns TRUE (based on who's turns was ) and pronounce the winner
+                {
+                    if (isTurn == false)
+                    {
+                        MessageBox.Show($" {fPlayer.Content} wins !\nWas playing with {"X"}", "Tic Tac Toe Gaming World", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    }
+                    else
+                    {
+                        MessageBox.Show($" {secPlayer.Content} wins\n Was playing with {"O"} !", "Tic Tac Toe Gaming World", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    }
+                }
+                Draw();                               // invoking the Draw() method when there is no winnner
+
+
+            }           // Else tha models Player O's turn
+
+
+
+
+
+        }
+        /// <summary>
+        /// About button that contains detailes about the developer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Developed by Mawande Hobo\n\nWith intenstions to improve the Tic Tac Toe Game by making it more practical\nModeling two players" +
+                "at which they are controlled by traffic lights to indicate their turns.\nI have been triggered the fact that i really love programming and giving" +
+                "myself challenging tasks to do, which needs great rhinking !","Loisel Hobo's Tic Tac Toe",MessageBoxButton.OK);
+        }
+
+        /// <summary>
+        ///  Reset Button ( setting all buttons to IsEnabled to true and content to empty string)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            isTurn = true;
+            b1r1.IsEnabled = true;
+            b1r1.Content = "";
+            b2r1.Content = "";
+            b2r1.IsEnabled = true;
+            b3r1.IsEnabled = true;
+            b3r1.Content = "";
+            b1r2.Content = "";
+            b1r2.IsEnabled = true;
+            b2r2.Content = "";
+            b2r2.IsEnabled = true;
+            b3r2.IsEnabled = true;
+            b3r2.Content = "";
+            b1r3.Content = "";
+            b1r3.IsEnabled = true;
+            b2r3.IsEnabled = true;
+            b2r3.Content = "";
+            b3r3.Content = "";
+            b3r3.IsEnabled = true;
+            
+        }   
+
+        /// <summary>
+        /// button that allows players to choose who plays first and second
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (pLayer2.Text != "" && pLayer1.Text != "")
+                {
+                    try
+                    {
+                        if (pLayer2.Text != "")
+                        {
+                            try
+                            {
+                                if (pLayer1.Text != "")
+                                {
+                                    try
+                                    {
+                                        if (pLayer2.Text.Length >= 4)
+                                        {
+                                            try
+                                            {
+                                                if (pLayer1.Text.Length >= 4)
+                                                {
+
+                                                    fPlayer.Content += pLayer1.Text;
+                                                    secPlayer.Content += pLayer2.Text;
+                                                    PlayCan.Visibility = Visibility.Visible;
+                                                    PlaersCan.Visibility = Visibility.Hidden;
+                                                }
+                                                else throw new Exception();
+                                            }
+                                            catch
+                                            {
+                                                MessageBox.Show("You specify lessthan 4 characters for player 1 \nCorrect name must have at least 4 Characters\nPlease enter correct name", "Tic Tac Toe", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                            }
+
+                                        }
+                                        else throw new Exception();
+
+
+                                    }
+                                    catch
+                                    {
+                                        MessageBox.Show("You specify lessthan 4 characters for player 2 \nCorrect name must have at least 4 Characters\nPlease enter correct name", "Tic Tac Toe", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                    }
+                                }
+                                else throw new Exception();
+                            }
+                            catch
+                            {
+                                MessageBox.Show("You didn't specify a Name for a First Player\nPlease enter correct name on Player 1", "Tic Tac Toe", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            }
+                        }
+                        else throw new Exception();
+
+
+                    }
+                    catch
+                    {
+                        MessageBox.Show("You didn't specify a Name for a Second Player\nPlease enter correct name on Player 2", "Tic Tac Toe", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+                else throw new Exception();
+            }
+            catch
+            {
+                MessageBox.Show("Please fill Names for both of you !!\nCorrect Names must be 4 or more Characters !!", "Tic Tac Toe", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+           
+        }
+        /// <summary>
+        /// buttons to change canvases
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            PlaersCan.Visibility = Visibility.Visible;
+            homeCan.Visibility = Visibility.Hidden;
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            PlayCan.Visibility = Visibility.Hidden;
+            homeCan.Visibility = Visibility.Visible;
+        }
+
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+            ShowCan.Visibility = Visibility.Visible;
+            PlayCan.Visibility = Visibility.Hidden;
+        }
+        /// <summary>
+        /// button to close the application
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click_7(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Button_Click_8(object sender, RoutedEventArgs e)
+        {
+            ShowCan.Visibility = Visibility.Hidden;
+            PlayCan.Visibility = Visibility.Visible;
+        }
+    }
+}
